@@ -6,19 +6,16 @@
 </head>
 <body>
 	<div>
-		<form th:action="@{/person/register}" method="POST">
-			<label>First name</label>			
-			<input type="text" id="name" name="name"/><br/>
-			<label>Last name</label>
-			<input type="text" id="lastname" name="lastname" /><br/>
-			<label>Age</label>
-			<input type="number" id="age" name="age" /><br/>
+		<form th:action="@{/person/register}" th:object="${person}"
+			method="POST">
+			<label>First name</label> <input type="text" th:field="*{name}" /><br />
+			<label>Last name</label> <input type="text" th:field="*{lastname}" /><br />
+			<label>Age</label> <input type="number" th:field="*{age}" /><br /> 
 			<label>Gender</label>
-			<select id="gender" name="gender" >
-				<option value="M">Male</option>
-				<option value="F">Famela</option>
-			</select><br/>
-			<input type="submit" value="Register" />
+			<select th:field="*{gender}">
+				<option th:value="'M'" th:text="Male"></option>
+				<option th:value="'F'" th:text="Female"></option>
+			</select><br /> <input type="submit" value="Register" />
 		</form>
 	</div>
 </body>
