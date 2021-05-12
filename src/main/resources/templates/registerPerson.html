@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>T-Systems</title>
+</head>
+<body>
+	<div>
+		<form th:action="@{/person/register}" method="POST">
+			<label>First name</label>			
+			<input type="text" id="name" name="name"/><br/>
+			<label>Last name</label>
+			<input type="text" id="lastname" name="lastname" /><br/>
+			<label>Age</label>
+			<input type="number" id="age" name="age" /><br/>
+			<label>Gender</label>
+			<select id="gender" name="gender" >
+				<option value="M">Male</option>
+				<option value="F">Famela</option>
+			</select><br/>
+			<input type="submit" value="Register" />
+		</form>
+	</div>
+</body>
+</html>
