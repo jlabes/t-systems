@@ -8,7 +8,8 @@
 	<div>
 		<form th:action="@{/person/register}" th:object="${person}"
 			method="POST">
-			<label>First name</label> <input type="text" th:field="*{name}" /><br />
+			<label>First name:</label>
+			<input type="text" th:field="*{name}"/><br/>
 			<label>Last name</label> <input type="text" th:field="*{lastname}" /><br />
 			<label>Age</label> <input type="number" th:field="*{age}" /><br /> 
 			<label>Gender</label>
@@ -17,6 +18,7 @@
 				<option th:value="'F'" th:text="Female"></option>
 			</select><br /> <input type="submit" value="Register" />
 		</form>
+		
 	</div>
 </body>
 </html>

@@ -1,7 +1,6 @@
-package com.example.demo;
+package com.tsystem.main;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -9,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class PersonController {
@@ -53,23 +52,27 @@ public class PersonController {
 	}
 
 	@RequestMapping(value = "/person/register", method = RequestMethod.POST)
-	public String addPerson(@ModelAttribute @Valid Person person, Errors errors) {
+	public String addPerson(@Valid Person person, Errors errors, RedirectAttributes model) {
 
 		if (errors.hasErrors()) {
 			return "registerPerson";
 		}
 
 		repository.save(person);
+		
+		model.addFlashAttribute("person", person);
+		model.addAttribute("personId", person.getId());
 
-		return "redirect:/profile/" + person.getId();
+		return "redirect:/profile/{personId}";
 	}
 
 	@RequestMapping(value = "/profile/{personId}", method = RequestMethod.GET)
 	public String showPersonProfile(@PathVariable long personId, Model model) {
 
-		Person person = repository.getOne(personId);
-		
-		model.addAttribute("person", person);
+		if (!model.containsAttribute("person")) {
+
+			model.addAttribute("person", repository.getOne(personId));
+		}		
 		
 		return "profile";
 	}

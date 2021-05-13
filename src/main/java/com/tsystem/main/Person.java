@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.tsystem.main;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +18,7 @@ public class Person {
 	private Long id;
 	
 	@NotNull
-	@Size(min=2, max=30)
+	@Size(min=2, max=30, message = "{name.size}")
 	private String name;
 	
 	@NotNull
