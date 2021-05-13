@@ -1,1 +1,0 @@
-insert into Employer(id, username, password) values (1, 'johnny', '{bcrypt}$2a$10$Pbs9NUKKErfiydz/Nxv9auLN7qUgVTquxPFeUYugRYFv0sGwAVBjq');
