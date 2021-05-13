@@ -1,16 +1,13 @@
 package com.tsystems.entity;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,15 +26,10 @@ public class Employer implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@NotNull
-	@Size(min=2, max=30)
+	@Column(unique = true)
 	private String username;
 	
-	@NotNull
 	private String password;
-	
-	@ManyToMany
-	private List<Role> roles;
 
 	public Employer() {
 
@@ -58,27 +50,11 @@ public class Employer implements UserDetails {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	public List<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
-	
-	// UserDetails methods
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		
-		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
-		
-		this.roles.forEach(role -> {
-			authorities.add(new SimpleGrantedAuthority(role.getRole()));
-		});
-		
-		return authorities;
+		return Arrays.asList(new SimpleGrantedAuthority("ADMIN"));
 	}
 	
 	@Override
