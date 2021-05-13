@@ -1,0 +1,7 @@
+Itens:
+1 - upload de imagem
+2 - separar html em: footer, header, body
+3 - spring security
+4 - adicionar css
+5 - possibilidade de trocar de idiomas
+6 - tratar errors

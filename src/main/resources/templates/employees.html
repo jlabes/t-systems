@@ -8,7 +8,7 @@
 </head>
 
 <body>
-	<div th:unless="${#lists.isEmpty(people)}">
+	<div th:unless="${#lists.isEmpty(employees)}">
 		<table>
 			<thead>
 				<tr>
@@ -19,13 +19,13 @@
 					<th>Action</th>
 				</tr>
 			</thead>
-			<tbody th:each="person : ${people}">
+			<tbody th:each="employee : ${employees}">
 				<tr>
-					<td th:text="${person.name}" />
-					<td th:text="${person.lastname}" />
-					<td th:text="${person.age}" />
-					<td th:text="${person.gender}" />
-					<td><a th:href="@{/delete/{personId}(personId=${person.Id})}">
+					<td th:text="${employee.name}" />
+					<td th:text="${employee.lastname}" />
+					<td th:text="${employee.age}" />
+					<td th:text="${employee.gender}" />
+					<td><a th:href="@{/delete/{employeeId}(employeeId=${employee.Id})}">
 					<img th:src="@{/images/delete.png}"/>
 					</a></td>
 				</tr>

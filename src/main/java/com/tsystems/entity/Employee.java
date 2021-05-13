@@ -1,9 +1,11 @@
-package com.tsystem.main;
+package com.tsystems.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -11,14 +13,14 @@ import javax.validation.constraints.Size;
 import com.sun.istack.NotNull;
 
 @Entity
-public class Person {
+public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
 	@NotNull
-	@Size(min=2, max=30, message = "{name.size}")
+	@Size(min=2, max=30)
 	private String name;
 	
 	@NotNull
@@ -32,6 +34,10 @@ public class Person {
 	
 	@NotNull
 	private char gender;
+	
+	@ManyToOne
+	@JoinColumn(name = "employer_id")
+	private Employer employer;
 	
 	public Long getId() {
 		return id;
@@ -62,5 +68,11 @@ public class Person {
 	}
 	public void setGender(char gender) {
 		this.gender = gender;
+	}
+	public Employer getEmployer() {
+		return employer;
+	}
+	public void setEmployer(Employer employer) {
+		this.employer = employer;
 	}
 }
