@@ -1,5 +1,7 @@
 package com.tsystems.security;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,9 +32,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void init(WebSecurity web) throws Exception {
 
 		Employer employer = new Employer();
-		employer.setId(1l);
 		employer.setPassword(encoder.encode("123456"));
 		employer.setUsername("johnny");
+		employer.setRoles(Arrays.asList("ADMIN","USER"));
+
+		repository.save(employer);
+		
+		employer = new Employer();
+		employer.setPassword(encoder.encode("123456"));
+		employer.setUsername("luiz");
+		employer.setRoles(Arrays.asList("ADMIN","USER"));
 
 		repository.save(employer);
 
@@ -52,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				return repository.findByUsername(username);
 			}
 		});
+		
 		provider.setPasswordEncoder(encoder);
 
 		auth.authenticationProvider(provider);
@@ -63,6 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
 
 		http.csrf().disable();
+		
 		http.headers().frameOptions().disable();
 	}
 

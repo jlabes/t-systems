@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -22,10 +23,10 @@ import com.tsystems.repository.EmployerRepository;
 public class EmployeeController {
 
 	@Autowired
-	private EmployeeRepository repository;
+	private EmployeeRepository employeeRepository;
 	
 	@Autowired
-	private EmployerRepository repoTemp;
+	private EmployerRepository employerRepository;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home() {
@@ -42,9 +43,9 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "/employees", method = RequestMethod.GET)
-	public String listAllEmployees(Model model) {
+	public String listAllEmployees(Model model, Authentication authentication) {
 
-		List<Employee> employeeList = repository.findAll();
+		List<Employee> employeeList = employeeRepository.findAllByEmployerUsername(authentication.getName());
 
 		if (employeeList != null) {
 			
@@ -57,25 +58,20 @@ public class EmployeeController {
 	@RequestMapping(value = "/delete/{employeeId}", method = RequestMethod.GET)
 	public String deleteEmployee(@PathVariable long employeeId) {
 
-		repository.deleteById(employeeId);
+		employeeRepository.deleteById(employeeId);
 
 		return "redirect:/employees";
 	}
 
 	@RequestMapping(value = "/employee/register", method = RequestMethod.POST)
-	public String addEmployee(@Valid Employee employee, Errors errors, RedirectAttributes model) {
+	public String addEmployee(@Valid Employee employee, Errors errors, RedirectAttributes model, Authentication authentication) {
 
 		if (errors.hasErrors()) {
 			
 			return "registerPerson";
 		}
-
-		//teste
-		Employer employer = repoTemp.getOne(1l);
 		
-		employee.setEmployer(employer);
-		
-		repository.save(employee);
+		employeeRepository.save(addEmployerToEmployee(employee, authentication));
 		
 		model.addFlashAttribute("employee", employee);
 		
@@ -89,9 +85,18 @@ public class EmployeeController {
 
 		if (!model.containsAttribute("employee")) {
 
-			model.addAttribute("employee", repository.getOne(employeeId));
+			model.addAttribute("employee", employeeRepository.getOne(employeeId));
 		}		
 		
 		return "profile";
+	}
+	
+	private Employee addEmployerToEmployee(Employee employee, Authentication authentication) {
+		
+		Employer employer = employerRepository.findByUsername(authentication.getName());
+		
+		employee.setEmployer(employer);
+		
+		return employee;
 	}
 }

@@ -5,3 +5,4 @@ Itens:
 4 - adicionar css
 5 - possibilidade de trocar de idiomas
 6 - tratar errors
+7 - remover o embedded database
