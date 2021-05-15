@@ -12,6 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.tsystems.entity.Employee;
@@ -31,6 +32,14 @@ public class EmployeeController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home() {
 
+		return "index";
+	}
+	
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String changeLanguage(@RequestParam("lang") String lang, Model model) {
+		
+		model.addAttribute("lang", lang);
+		
 		return "index";
 	}
 

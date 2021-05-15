@@ -2,16 +2,23 @@
 <html>
 
 <head>
-	<meta charset="ISO-8859-1">
-	<title>T-Systems</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+<meta charset="UTF-8">
+<title>T-Systems</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
 </head>
 
 <body>
 	<div>
-		<a th:href="@{/employees}">List all</a>
-		<a th:href="@{/employee/register}">Register</a>
-		<a th:href="@{/logout}">Logout</a>
+		<a th:href="@{/employees}"><h1 th:text="#{listAll}"></h1></a> <a
+			th:href="@{/employee/register}"><h1 th:text="#{register}"></h1></a> <a
+			th:href="@{/logout}"><h1 th:text="#{logout}"></h1></a>
+		<form th:action="@{/index}" method="GET">
+			<select name="lang" id="lang">
+				<option th:value="portugues" th:text="#{portuguese}"></option>
+				<option th:value="deutsch" th:text="#{german}"></option>
+				<option th:value="english" th:text="#{english}"></option>
+			</select><br /> <input type="submit" th:value="#{change}">
+		</form>
 	</div>
 </body>
 </html>

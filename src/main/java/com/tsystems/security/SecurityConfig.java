@@ -27,21 +27,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private PasswordEncoder encoder;
-
+	
 	@Override
 	public void init(WebSecurity web) throws Exception {
 
 		Employer employer = new Employer();
 		employer.setPassword(encoder.encode("123456"));
 		employer.setUsername("johnny");
-		employer.setRoles(Arrays.asList("ADMIN","USER"));
+		employer.setRoles(Arrays.asList("ADMIN", "USER"));
 
 		repository.save(employer);
-		
+
 		employer = new Employer();
 		employer.setPassword(encoder.encode("123456"));
 		employer.setUsername("luiz");
-		employer.setRoles(Arrays.asList("ADMIN","USER"));
+		employer.setRoles(Arrays.asList("ADMIN", "USER"));
 
 		repository.save(employer);
 
@@ -61,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				return repository.findByUsername(username);
 			}
 		});
-		
+
 		provider.setPasswordEncoder(encoder);
 
 		auth.authenticationProvider(provider);
@@ -73,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
 
 		http.csrf().disable();
-		
+
 		http.headers().frameOptions().disable();
 	}
 
