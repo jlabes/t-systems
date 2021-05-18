@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>T-Systems</title>
@@ -8,10 +8,12 @@
 	<div>
 		<form th:action="@{/employee/register}" th:object="${employee}"
 			method="POST">
-			<label>First name:</label> <input type="text" th:field="*{name}" />
-			<br /> <label>Last name</label> <input type="text"
-				th:field="*{lastname}" /><br /> <label>Age</label> <input
-				type="number" th:field="*{age}" /><br /> <label>Gender</label> <select
+			<label th:text="#{name}"></label> <input type="text" th:field="*{name}" />
+			<br /> <label th:text="#{lastname}"></label> <input type="text"
+				th:field="*{lastname}" />
+				<span th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}"></span>
+				<br /> <label th:text="#{age}"></label> <input
+				type="number" th:field="*{age}" /><br /> <label th:text="#{gender}"></label> <select
 				th:field="*{gender}">
 				<option th:value="'M'" th:text="Male"></option>
 				<option th:value="'F'" th:text="Female"></option>

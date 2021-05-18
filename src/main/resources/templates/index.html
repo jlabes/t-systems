@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>T-Systems</title>
@@ -9,14 +8,20 @@
 
 <body>
 	<div>
-		<a th:href="@{/employees}"><h1 th:text="#{listAll}"></h1></a> <a
-			th:href="@{/employee/register}"><h1 th:text="#{register}"></h1></a> <a
-			th:href="@{/logout}"><h1 th:text="#{logout}"></h1></a>
+		<a th:href="@{/employees}"><span th:text="#{listAll}"></span></a> <a
+			th:href="@{/employee/register}"><span th:text="#{register}"></span></a>
+		<a th:href="@{/logout}"><span th:text="#{logout}"></span></a>
 		<form th:action="@{/index}" method="GET">
 			<select name="lang" id="lang">
-				<option th:value="portugues" th:text="#{portuguese}"></option>
-				<option th:value="deutsch" th:text="#{german}"></option>
-				<option th:value="english" th:text="#{english}"></option>
+				<option th:value="portuguese"
+					th:style="'background-image:url(' + @{/images/brazil.png} + ');'"
+					th:text="#{portuguese}"></option>
+				<option th:value="german"
+					th:style="'background-image:url(' + @{/images/germany.png} + ');'"
+					th:text="#{german}"></option>
+				<option th:value="english"
+					th:style="'background-image:url(' + @{/images/usa.png} + ');'"
+					th:text="#{english}"></option>
 			</select><br /> <input type="submit" th:value="#{change}">
 		</form>
 	</div>

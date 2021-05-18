@@ -77,7 +77,7 @@ public class EmployeeController {
 
 		if (errors.hasErrors()) {
 			
-			return "registerPerson";
+			return "registerEmployee";
 		}
 		
 		employeeRepository.save(addEmployerToEmployee(employee, authentication));
