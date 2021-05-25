@@ -18,18 +18,10 @@
 	crossorigin="anonymous"></script>
 </head>
 <body>
-	<div class="container">
-		<div th:insert="fragments/header :: header" /></div>
+	<footer class="footer navbar-fixed-bottom" th:fragment="footer">
 		<div class="container">
-			<div class="jumbotron">
-				<div class="container">
-					<h1>
-						<span th:text="#{welcome}"></span>
-					</h1>
-				</div>
-			</div>
+			<p class="text-muted">&copy; 2021 T-Systems</p>
 		</div>
-		<div th:insert="fragments/footer :: footer" /></div>
-	</div>
+	</footer>
 </body>
 </html>

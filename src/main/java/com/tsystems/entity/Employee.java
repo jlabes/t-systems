@@ -31,7 +31,7 @@ public class Employee {
 	@Max(value = 150, message = "{age.max}")
 	private int age;
 
-	@NotNull(message = "{gender.null}")
+	@NotNull
 	private char gender;
 
 	@ManyToOne

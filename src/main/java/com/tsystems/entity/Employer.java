@@ -36,8 +36,12 @@ public class Employer implements UserDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> roles;
 
-	public Employer() {
-
+	public Employer() {}
+	
+	public Employer(String username, String password, List<String> roles) {
+		this.username = username;
+		this.password = password;
+		this.roles = roles;
 	}
 
 	public Long getId() {

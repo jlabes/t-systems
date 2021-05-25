@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +26,7 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
-	
+
 	@Autowired
 	private EmployerRepository employerRepository;
 
@@ -34,20 +35,20 @@ public class EmployeeController {
 
 		return "index";
 	}
-	
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String changeLanguage(@RequestParam("lang") String lang, Model model) {
-		
+
 		model.addAttribute("lang", lang);
-		
+
 		return "index";
 	}
 
 	@RequestMapping(value = "/employee/register", method = RequestMethod.GET)
 	public String registerEmployee(Model model) {
-		
+
 		model.addAttribute("employee", new Employee());
-		
+
 		return "registerEmployee";
 	}
 
@@ -57,7 +58,7 @@ public class EmployeeController {
 		List<Employee> employeeList = employeeRepository.findAllByEmployerUsername(authentication.getName());
 
 		if (employeeList != null) {
-			
+
 			model.addAttribute("employees", employeeList);
 		}
 
@@ -73,39 +74,33 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "/employee/register", method = RequestMethod.POST)
-	public String addEmployee(@Valid Employee employee, Errors errors, RedirectAttributes model, Authentication authentication) {
+	public String addEmployee(@ModelAttribute("employee") @Valid Employee employee, Errors errors,
+			Authentication authentication) {
 
 		if (errors.hasErrors()) {
-			
+
 			return "registerEmployee";
 		}
-		
-		employeeRepository.save(addEmployerToEmployee(employee, authentication));
-		
-		model.addFlashAttribute("employee", employee);
-		
-		model.addAttribute("employeeId", employee.getId());
 
-		return "redirect:/profile/{employeeId}";
+		employeeRepository.save(addEmployerToEmployee(employee, authentication));
+
+		return "redirect:/employees";
 	}
 
-	@RequestMapping(value = "/profile/{employeeId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/employee/{employeeId}", method = RequestMethod.GET)
 	public String showEmployeeProfile(@PathVariable long employeeId, Model model) {
 
-		if (!model.containsAttribute("employee")) {
+		model.addAttribute("employee", employeeRepository.getOne(employeeId));
 
-			model.addAttribute("employee", employeeRepository.getOne(employeeId));
-		}		
-		
-		return "profile";
+		return "registerEmployee";
 	}
 	
 	private Employee addEmployerToEmployee(Employee employee, Authentication authentication) {
-		
+
 		Employer employer = employerRepository.findByUsername(authentication.getName());
-		
+
 		employee.setEmployer(employer);
-		
+
 		return employee;
 	}
 }

@@ -1,34 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8">
-	<title>T-Systems</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T-Systems</title>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+	integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+	crossorigin="anonymous"></script>
+<script
+	src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+	integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+	crossorigin="anonymous"></script>
 </head>
 <body>
-	<div th:unless="${#lists.isEmpty(employees)}">
-		<table>
-			<thead>
-				<tr>
-					<th th:text="#{name}"></th>
-					<th th:text="#{lastname}"></th>
-					<th th:text="#{age}"></th>
-					<th th:text="#{gender}"></th>
-					<th th:text="#{action}"></th>
-				</tr>
-			</thead>
-			<tbody th:each="employee : ${employees}">
-				<tr>
-					<td th:text="${employee.name}" />
-					<td th:text="${employee.lastname}" />
-					<td th:text="${employee.age}" />
-					<td th:text="${employee.gender}" />
-					<td><a th:href="@{/delete/{employeeId}(employeeId=${employee.Id})}">
-					<img th:src="@{/images/delete.png}"/>
-					</a></td>
-				</tr>
-			</tbody>
-		</table>
+	<div class="container">
+		<div th:insert="fragments/header :: header" /></div>
+		<div class="container">
+			<div th:if="${#lists.isEmpty(employees)}">
+				<div class="container">
+					<span th:text="#{employees.empty}"></span>
+				</div>
+			</div>
+			<div th:unless="${#lists.isEmpty(employees)}">
+				<div class="container">
+					<table class="table">
+						<thead>
+							<tr>
+								<th th:text="#{name}"></th>
+								<th th:text="#{lastname}"></th>
+								<th th:text="#{age}"></th>
+								<th th:text="#{gender}"></th>
+								<th th:text="#{actions}"></th>
+							</tr>
+						</thead>
+						<tbody th:each="employee : ${employees}">
+							<tr>
+								<td th:text="${employee.name}" />
+								<td th:text="${employee.lastname}" />
+								<td th:text="${employee.age}" />
+								<td th:text="${employee.gender}" />
+								<td><a
+									th:href="@{/delete/{employeeId}(employeeId=${employee.Id})}">
+										<img th:src="@{/images/delete.png}" />
+								</a> <a th:href="@{/employee/{employeeId}(employeeId=${employee.Id})}">
+										<img th:src="@{/images/edit.png}"  />
+								</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div th:insert="fragments/footer :: footer" /></div>
 	</div>
 </body>
 </html>
