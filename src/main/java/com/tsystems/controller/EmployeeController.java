@@ -1,6 +1,9 @@
 package com.tsystems.controller;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -14,21 +17,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.tsystems.entity.Employee;
-import com.tsystems.entity.Employer;
-import com.tsystems.repository.EmployeeRepository;
-import com.tsystems.repository.EmployerRepository;
+import com.tsystems.model.Employee;
+import com.tsystems.model.Employer;
+import com.tsystems.service.EmployeeService;
+import com.tsystems.service.EmployerService;
 
 @Controller
 public class EmployeeController {
 
 	@Autowired
-	private EmployeeRepository employeeRepository;
+	private EmployeeService service;
 
 	@Autowired
-	private EmployerRepository employerRepository;
+	private EmployerService otherService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home() {
@@ -49,28 +51,15 @@ public class EmployeeController {
 
 		model.addAttribute("employee", new Employee());
 
-		return "registerEmployee";
+		return "employee_register";
 	}
 
-	@RequestMapping(value = "/employees", method = RequestMethod.GET)
-	public String listAllEmployees(Model model, Authentication authentication) {
+	@RequestMapping(value = "/employee/{employeeId}", method = RequestMethod.GET)
+	public String showEmployeeProfile(@PathVariable long employeeId, Model model) {
 
-		List<Employee> employeeList = employeeRepository.findAllByEmployerUsername(authentication.getName());
+		model.addAttribute("employee", service.getEmployee(employeeId));
 
-		if (employeeList != null) {
-
-			model.addAttribute("employees", employeeList);
-		}
-
-		return "employees";
-	}
-
-	@RequestMapping(value = "/delete/{employeeId}", method = RequestMethod.GET)
-	public String deleteEmployee(@PathVariable long employeeId) {
-
-		employeeRepository.deleteById(employeeId);
-
-		return "redirect:/employees";
+		return "employee_register";
 	}
 
 	@RequestMapping(value = "/employee/register", method = RequestMethod.POST)
@@ -79,25 +68,93 @@ public class EmployeeController {
 
 		if (errors.hasErrors()) {
 
-			return "registerEmployee";
+			return "employee_register";
 		}
 
-		employeeRepository.save(addEmployerToEmployee(employee, authentication));
+		employee = addEmployerToEmployee(employee, authentication);
+
+		if (employee.getId() == null) {
+			
+			service.addEmployee(employee);
+		} else {
+			
+			service.updateEmployee(employee.getId(), employee);
+		}
 
 		return "redirect:/employees";
 	}
 
-	@RequestMapping(value = "/employee/{employeeId}", method = RequestMethod.GET)
-	public String showEmployeeProfile(@PathVariable long employeeId, Model model) {
+	@RequestMapping(value = "/employees", method = RequestMethod.GET)
+	public String listAllEmployees(Model model, Authentication authentication) {
 
-		model.addAttribute("employee", employeeRepository.getOne(employeeId));
+		List<Employee> employees = service.getAllEmployees(authentication.getName());
 
-		return "registerEmployee";
+		if (employees != null) {
+
+			model.addAttribute("employees", employees);
+		}
+
+		return "employees";
 	}
-	
+
+	@RequestMapping(value = "/employees/condition", method = RequestMethod.GET)
+	public String listAllEmployeesActiveOrNotActive(@RequestParam("active") boolean active, Model model,
+			Authentication authentication) {
+
+		List<Employee> employees = service.getAllEmployees(authentication.getName());
+
+		List<Employee> employeesActiveOrNotActive = employees.stream().filter(e -> e.isActive() == active)
+				.collect(Collectors.toList());
+
+		if (employeesActiveOrNotActive != null) {
+
+			model.addAttribute("employees", employeesActiveOrNotActive);
+		}
+
+		return "employees";
+	}
+
+	@RequestMapping(value = "/employees/salary", method = RequestMethod.GET)
+	public String listAllEmployeesSalary(Model model, Authentication authentication) {
+
+		List<Employee> employees = service.getAllEmployees(authentication.getName());
+
+		model.addAttribute("employees", employees);
+
+		return "employees_salary";
+	}
+
+	@RequestMapping(value = "/employees/salary/group", method = RequestMethod.GET)
+	public String listAllEmployeesGroupingSalary(Model model, Authentication authentication) {
+
+		List<Employee> employees = service.getAllEmployees(authentication.getName());
+
+		if (employees != null) {
+
+			Map<Double, List<Employee>> groupingEmployees = employees.stream()
+					.collect(Collectors.groupingBy(Employee::getSalary));
+
+			groupingEmployees = groupingEmployees.entrySet().stream().sorted(Map.Entry.comparingByKey())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+							LinkedHashMap::new));
+
+			model.addAttribute("employees_group", groupingEmployees);
+		}
+
+		return "employees_salary";
+	}
+
+	@RequestMapping(value = "/delete/{employeeId}", method = RequestMethod.GET)
+	public String deleteEmployee(@PathVariable long employeeId) {
+
+		service.deleteEmployee(employeeId);
+
+		return "redirect:/employees";
+	}
+
 	private Employee addEmployerToEmployee(Employee employee, Authentication authentication) {
 
-		Employer employer = employerRepository.findByUsername(authentication.getName());
+		Employer employer = otherService.getEmployer(authentication.getName());
 
 		employee.setEmployer(employer);
 

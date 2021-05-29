@@ -1,4 +1,4 @@
-package com.tsystems.entity;
+package com.tsystems.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,9 @@ import javax.validation.constraints.Size;
 
 @Entity
 public class Employee {
+	
+	@Transient
+	private final long MIN_SALARY = 1100;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,6 +41,13 @@ public class Employee {
 	@ManyToOne
 	@JoinColumn(name = "employer_id")
 	private Employer employer;
+	
+	@NotNull
+	@Min(value = MIN_SALARY, message= "{salary.min}")
+	private double salary;
+	
+	@NotNull
+	private boolean active;
 
 	public Long getId() {
 		return id;
@@ -84,5 +95,21 @@ public class Employee {
 
 	public void setEmployer(Employer employer) {
 		this.employer = employer;
+	}
+
+	public double getSalary() {
+		return salary;
+	}
+
+	public void setSalary(double salary) {
+		this.salary = salary;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

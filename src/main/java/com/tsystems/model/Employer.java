@@ -1,4 +1,4 @@
-package com.tsystems.entity;
+package com.tsystems.model;
 
 import java.util.ArrayList;
 import java.util.Collection;

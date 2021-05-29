@@ -7,12 +7,14 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.tsystems.entity.Employer;
+import com.tsystems.model.Employer;
 import com.tsystems.repository.EmployerRepository;
 
 @SpringBootApplication
+@EnableCaching
 public class TSystemsApplication {
 
 	@Autowired
@@ -28,7 +30,7 @@ public class TSystemsApplication {
 	@PostConstruct
 	public void addEmployers() {
 		repository.save(new Employer("johnny", encoder.encode("tsystems"), Arrays.asList("ADMIN", "USER")));
-		repository.save(new Employer("gislaine", encoder.encode("tsystems"), Arrays.asList("ADMIN", "USER")));
+		repository.save(new Employer("luiz", encoder.encode("tsystems"), Arrays.asList("ADMIN", "USER")));
 	}
 
 }

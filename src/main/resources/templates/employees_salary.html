@@ -21,7 +21,8 @@
 	<div class="container">
 		<div th:insert="fragments/header :: header" /></div>
 		<div class="container">
-			<div th:if="${#lists.isEmpty(employees)}">
+			<div
+				th:if="${#lists.isEmpty(employees)} and ${#maps.isEmpty(employees_group)}">
 				<div class="container">
 					<span th:text="#{employees.empty}"></span>
 				</div>
@@ -30,34 +31,41 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th th:text="#{name}"></th>
-							<th th:text="#{lastname}"></th>
-							<th th:text="#{age}"></th>
-							<th th:text="#{gender}"></th>
-							<th th:text="#{actions}"></th>
+							<th th:text="#{fullname}"></th>
+							<th th:text="#{salary}"></th>
 						</tr>
 					</thead>
 					<tbody th:each="employee : ${employees}">
 						<tr>
-							<td th:text="${employee.name}" />
-							<td th:text="${employee.lastname}" />
-							<td th:text="${employee.age}" />
-							<td th:text="${employee.gender}" />
-							<td><a
-								th:href="@{/delete/{employeeId}(employeeId=${employee.Id})}">
-									<img th:src="@{/images/delete.png}" />
-							</a> <a
-								th:href="@{/employee/{employeeId}(employeeId=${employee.Id})}">
-									<img th:src="@{/images/edit.png}" />
-							</a></td>
+							<td><span th:text="${employee.name}"></span>&nbsp;<span
+								th:text="${employee.lastname}"></span></td>
+							<td th:text="${employee.salary}"></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-			<a th:href="@{/employees/condition?active=true}"><span
-				th:text="#{active}"></span></a> <a
-				th:href="@{/employees/condition?active=false}"><span
-				th:text="#{not.active}"></span></a>
+			<div th:unless="${#maps.isEmpty(employees_group)}">
+				<table class="table">
+					<thead>
+						<tr>
+							<th th:text="#{salary}"></th>
+							<th th:text="#{fullname}"></th>
+						</tr>
+					</thead>
+					<tr th:each="group : ${employees_group}">
+						<td th:text="${group.key}"></td>
+						<td>
+							<table>
+								<tr th:each="employee : ${group.value}">
+									<td><span th:text="${employee.name}"></span>&nbsp;<span
+										th:text="${employee.lastname}"></span></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<a th:href="@{/employees/salary/group}"><span th:text="#{group}"></span></a>
 		</div>
 		<div th:insert="fragments/footer :: footer" /></div>
 	</div>
