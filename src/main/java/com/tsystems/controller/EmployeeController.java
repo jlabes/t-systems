@@ -1,5 +1,6 @@
 package com.tsystems.controller;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "/employee/register", method = RequestMethod.POST)
-	public String addEmployee(@ModelAttribute("employee") @Valid Employee employee, Errors errors,
+	public String addOrUpdateEmployee(@ModelAttribute("employee") @Valid Employee employee, Errors errors,
 			Authentication authentication) {
 
 		if (errors.hasErrors()) {
@@ -74,10 +75,10 @@ public class EmployeeController {
 		employee = addEmployerToEmployee(employee, authentication);
 
 		if (employee.getId() == null) {
-			
+
 			service.addEmployee(employee);
 		} else {
-			
+
 			service.updateEmployee(employee.getId(), employee);
 		}
 
@@ -101,14 +102,11 @@ public class EmployeeController {
 	public String listAllEmployeesActiveOrNotActive(@RequestParam("active") boolean active, Model model,
 			Authentication authentication) {
 
-		List<Employee> employees = service.getAllEmployees(authentication.getName());
+		List<Employee> employees = service.getAllEmployeesActiveOrNotActive(authentication.getName(), active);
 
-		List<Employee> employeesActiveOrNotActive = employees.stream().filter(e -> e.isActive() == active)
-				.collect(Collectors.toList());
+		if (employees != null) {
 
-		if (employeesActiveOrNotActive != null) {
-
-			model.addAttribute("employees", employeesActiveOrNotActive);
+			model.addAttribute("employees", employees);
 		}
 
 		return "employees";
@@ -125,20 +123,13 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "/employees/salary/group", method = RequestMethod.GET)
-	public String listAllEmployeesGroupingSalary(Model model, Authentication authentication) {
+	public String listAllEmployeesGroupingBySalary(Model model, Authentication authentication) {
 
-		List<Employee> employees = service.getAllEmployees(authentication.getName());
+		Map<Double, List<Employee>> employees = service.getAllEmployeesGroupingBySalary(authentication.getName());
 
 		if (employees != null) {
 
-			Map<Double, List<Employee>> groupingEmployees = employees.stream()
-					.collect(Collectors.groupingBy(Employee::getSalary));
-
-			groupingEmployees = groupingEmployees.entrySet().stream().sorted(Map.Entry.comparingByKey())
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-							LinkedHashMap::new));
-
-			model.addAttribute("employees_group", groupingEmployees);
+			model.addAttribute("employees_group", employees);
 		}
 
 		return "employees_salary";
