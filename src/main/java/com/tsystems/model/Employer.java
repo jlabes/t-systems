@@ -1,8 +1,8 @@
 package com.tsystems.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -36,8 +36,9 @@ public class Employer implements UserDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> roles;
 
-	public Employer() {}
-	
+	public Employer() {
+	}
+
 	public Employer(String username, String password, List<String> roles) {
 		this.username = username;
 		this.password = password;
@@ -71,13 +72,7 @@ public class Employer implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
-		List<GrantedAuthority> authorities = new ArrayList<>();
-
-		roles.forEach(role -> {
-			authorities.add(new SimpleGrantedAuthority(role));
-		});
-
-		return authorities;
+		return roles.stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
 	}
 
 	@Override

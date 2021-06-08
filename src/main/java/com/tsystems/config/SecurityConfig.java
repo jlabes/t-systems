@@ -1,4 +1,4 @@
-package com.tsystems.security;
+package com.tsystems.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -7,38 +7,26 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.tsystems.repository.EmployerRepository;
+import com.tsystems.service.EmployerService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private EmployerRepository repository;
-
-	@Autowired
-	private PasswordEncoder encoder;
+	private EmployerService service;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
-		provider.setUserDetailsService(new UserDetailsService() {
+		provider.setUserDetailsService(name -> service.getEmployer(name));
 
-			@Override
-			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-				return repository.findByUsername(username);
-			}
-		});
-
-		provider.setPasswordEncoder(encoder);
+		provider.setPasswordEncoder(new BCryptPasswordEncoder());
 
 		auth.authenticationProvider(provider);
 	}

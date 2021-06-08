@@ -19,6 +19,9 @@ public class EmployeeService {
 
 	@Autowired
 	private EmployeeRepository repository;
+	
+	@Autowired
+	private EmployerService service;
 
 	public EmployeeService() {
 
@@ -57,8 +60,11 @@ public class EmployeeService {
 	}
 
 	@CacheEvict(value = "employees", allEntries = true)
-	public void addEmployee(Employee employee) {
+	public void addEmployee(Employee employee, String employerName) {
 
+		if (employee.getEmployer() == null)
+			employee.setEmployer(service.getEmployer(employerName));
+		
 		repository.save(employee);
 	}
 
@@ -66,9 +72,14 @@ public class EmployeeService {
 			@CacheEvict(value = "employees", allEntries = true) })
 	public void updateEmployee(long employeeId, Employee employee) {
 
-		if (repository.findById(employeeId).get() != null) {
-
+		if (repository.findById(employeeId).get() != null)
 			repository.save(employee);
-		}
+	}
+	
+	@Caching(evict = { @CacheEvict(value = "employee", allEntries = true),
+			@CacheEvict(value = "employees", allEntries = true) })
+	public void deleteAllEmployees() {
+		
+		repository.deleteAll();
 	}
 }
