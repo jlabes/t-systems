@@ -1,90 +1,85 @@
 package com.tsystems.controller;
 
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Optional;
+
+import javax.servlet.http.HttpSession;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import com.tsystems.model.Employee;
+import com.tsystems.TestConfig;
+import com.tsystems.domain.Employee;
+import com.tsystems.domain.EmployeeDto;
+import com.tsystems.domain.Employer;
+import com.tsystems.domain.User;
+import com.tsystems.repository.EmployeeRepository;
 import com.tsystems.service.EmployeeService;
+import com.tsystems.service.EmployerService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
-public class EmployeeControllerTest {
+@AutoConfigureJsonTesters
+@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(controllers = MainController.class)
+@Import(TestConfig.class)
+public class MainControllerTest {
+
+	@MockBean
+	private EmployeeService employeeService;
+
+	@MockBean
+	private HttpSession session;
 
 	@Autowired
-	private WebApplicationContext context;
+	private JacksonTester<EmployeeDto> jsonRequest;
 
 	@Autowired
-	private EmployeeService service;
+	private JacksonTester<Employee> jsonResponse;
 
+	@Autowired
 	private MockMvc mockMvc;
 	
-	@Before
-	public void setupMockMvc() {
-
-		mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-	}
-
-	@After
-	public void deleteAllEmployees() {
-		
-		service.deleteAllEmployees();
-	}
+	@Autowired
+	private Employer employer;
 	
-	@Test
-	@WithMockUser(username="johnny")
-	public void verifyHomePage() throws Exception {
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/")).andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.view().name("index"));
+	public void testGetAllEmployee() {
+		//pagina 369
 	}
 
 	@Test
-	@WithMockUser(username="johnny")
-	public void verifyListEmployees() throws Exception {
+	public void testAddEmployee() throws Exception {
+		
+		EmployeeDto employeeDto = new EmployeeDto("Tsystems", "Tsystems", 30, 'M', 2200, true);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/employees")).andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.view().name("employees"))
-				.andExpect(MockMvcResultMatchers.model().attributeExists("employees"))
-				.andExpect(MockMvcResultMatchers.model().attribute("employees", Matchers.is(Matchers.empty())));
-	}
-
-	@Test
-	@WithMockUser(username="johnny")
-	public void verifyEmployeeAdded() throws Exception {
-
-		mockMvc.perform(MockMvcRequestBuilders.post("/employee/register")
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED).param("name", "Johnny").param("lastname", "Labes")
-				.param("age", "23").param("gender", "M").param("salary", "2200").param("active", "true"))
-				.andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-				.andExpect(MockMvcResultMatchers.header().string("Location", "/employees"));
-
-		Employee employee = new Employee();
-		employee.setName("Johnny");
-		employee.setLastname("Labes");
-		employee.setAge(23);
-		employee.setGender('M');
-		employee.setSalary(2200);
-		employee.setActive(true);
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/employees")).andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.model().attributeExists("employees"))
-				.andExpect(MockMvcResultMatchers.model().attribute("employees", Matchers.hasSize(1)))
-				.andExpect(MockMvcResultMatchers.model().attribute("employees",
-						Matchers.contains(Matchers.samePropertyValuesAs(employee, "id", "employer"))));
+		when(session.getAttribute(eq("currentUser"))).thenReturn(new User(employer));
+		
+		MockHttpServletResponse response = mockMvc.perform(post("/employee/register")
+				.contentType(MediaType.APPLICATION_JSON).content(jsonRequest.write(employeeDto).getJson())).andReturn()
+				.getResponse();
+		
+		assertEquals(response.getStatus(), status().is3xxRedirection());
+		assertEquals(response.getRedirectedUrl(), "/employees");
+		
 	}
 
 }

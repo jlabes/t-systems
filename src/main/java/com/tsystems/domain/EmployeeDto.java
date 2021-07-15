@@ -1,10 +1,10 @@
-package com.tsystems.model;
+package com.tsystems.domain;
 
 import java.io.Serializable;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 public class EmployeeDto implements Serializable {
@@ -14,37 +14,40 @@ public class EmployeeDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final long MIN_SALARY = 1100;
-	
 	private Long id;
-	
-	@NotNull(message = "{name.null}")
+
 	@Size(min = 2, max = 30, message = "{name.size}")
+	@NotEmpty(message = "{name.null}")
 	private String name;
-	
-	@NotNull(message = "{lastname.null}")
+
 	@Size(min = 2, max = 50, message = "{lastname.size}")
+	@NotEmpty(message = "{lastname.null}")
 	private String lastname;
-	
-	@NotNull(message = "{age.null}")
+
 	@Min(value = 0, message = "{age.min}")
 	@Max(value = 150, message = "{age.max}")
 	private int age;
-	
-	@NotNull
+
 	private char gender;
-	
-	@NotNull
-	@Min(value = MIN_SALARY, message= "{salary.min}")
+
+	@Min(value = 0, message = "{salary.min}")
 	private double salary;
-	
-	@NotNull
+
 	private boolean active;
-	
+
 	public EmployeeDto() {
-		
+
 	}
-	
+
+	public EmployeeDto(String name, String lastname, int age, char gender, double salary, boolean active) {
+		this.name = name;
+		this.lastname = lastname;
+		this.age = age;
+		this.gender = gender;
+		this.salary = salary;
+		this.active = active;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -100,12 +103,12 @@ public class EmployeeDto implements Serializable {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();

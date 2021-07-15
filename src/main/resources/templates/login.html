@@ -17,13 +17,23 @@
 	integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
 	crossorigin="anonymous"></script>
 </head>
-<body>
-	<div class="container">
-		<img th:src="@{/images/error.png}"></img>
-		<p>
-			There seems to be a problem with the page you requested.
-		</p>
-		<span th:text="${error}"></span>
-	</div>
+<body class="text-center">
+	<main class="form-sigin">
+		<div th:if="${error}">
+			<p class="alert alert-warning">Username or password incorrect!</p>
+		</div>
+		<form class="form" th:action="@{/login}" method="POST">
+			<div class="form-floating">
+				<label for="username">Name</label>
+				<input type="text" class="form-control" id="username" name="username" required> 
+			</div>
+			<div class="form-floating">
+				<label for="password">Password</label>
+				<input type="password" class="form-control" id="password" name="password" required> 
+			</div>
+			<button type="submit" class="w-100 btn btn-lg btn-primary">Sign in</button>
+		</form>
+		<a th:href="@{/register}"><span th:text="#{register}"></span></a>
+	</main>
 </body>
 </html>

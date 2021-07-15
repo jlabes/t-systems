@@ -1,12 +1,15 @@
 package com.tsystems.service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.tsystems.model.Employer;
+import com.tsystems.domain.Employer;
+import com.tsystems.domain.EmployerDto;
 import com.tsystems.repository.EmployerRepository;
 
 @Service
@@ -19,15 +22,29 @@ public class EmployerService {
 		
 	}
 	
-	@Cacheable(value = "employer", key = "#p0")
-	public Employer getEmployer(String employerName) {
+	public Employer getEmployer(String name) {
 		
-		return repository.findByUsername(employerName);
+		return repository.findByUsername(name);
 	}
 	
-	public Employer getEmployer(long employerId) {
+	public boolean isEmailRegistered(String email) {
 		
-		return repository.findById(employerId).get();
+		return repository.findByEmail(email) == null ? false : true;
+	}
+	
+	public boolean isMatchingToken(String token) {
+		
+		return repository.findByToken(token) == null ? false : true;
+	}
+	
+	public Employer getEmployerByToken(String token) {
+		
+		return repository.findByToken(token);
+	}
+	
+	public Employer getEmployer(long id) {
+		
+		return repository.findById(id).get();
 	}
 	
 	public List<Employer> getEmployers() {
@@ -35,8 +52,33 @@ public class EmployerService {
 		return repository.findAll();
 	}
 	
-	public void addEmployer(Employer employer) {
+	public void saveEmployer(Employer employer) {
 		
 		repository.save(employer);
+	}
+	
+	public Employer saveEmployer(EmployerDto emploterDto) {
+		
+		Employer employer = convertFromDtoToEntity(emploterDto);
+		employer.setToken(UUID.randomUUID().toString());
+		employer.setPassword(new BCryptPasswordEncoder().encode(employer.getPassword()));
+		employer.setRoles(Arrays.asList("USER"));
+		
+		saveEmployer(employer);
+		
+		return employer;
+	}
+	
+	public void employerConfirmed(String token) {
+		
+		Employer employer = getEmployerByToken(token);
+		employer.setEnabled(true);
+		
+		saveEmployer(employer);
+	}
+	
+	private Employer convertFromDtoToEntity(EmployerDto employerDto) {
+
+		return new Employer(employerDto.getId(), employerDto.getUsername(), employerDto.getEmail(), employerDto.getPassword(), null, false, null);
 	}
 }

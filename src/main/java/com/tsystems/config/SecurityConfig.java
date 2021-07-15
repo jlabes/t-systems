@@ -8,8 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.tsystems.domain.User;
 import com.tsystems.service.EmployerService;
 
 @Configuration
@@ -18,13 +18,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private EmployerService service;
-
+	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
-		provider.setUserDetailsService(name -> service.getEmployer(name));
+		provider.setUserDetailsService(name -> new User(service.getEmployer(name)));
 
 		provider.setPasswordEncoder(new BCryptPasswordEncoder());
 
@@ -34,11 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
-
-		http.csrf().disable();
-
-		http.headers().frameOptions().disable();
+		http.authorizeRequests().antMatchers("/register").permitAll().antMatchers("/confirm").permitAll().anyRequest()
+				.authenticated().and().formLogin().loginPage("/login").permitAll().failureUrl("/login-error").and().logout().logoutSuccessUrl("/login");
 	}
 
 }

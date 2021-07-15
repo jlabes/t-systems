@@ -11,7 +11,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
-import com.tsystems.model.Employee;
+import com.tsystems.domain.Employee;
+import com.tsystems.domain.EmployeeDto;
+import com.tsystems.domain.Employer;
 import com.tsystems.repository.EmployeeRepository;
 
 @Service
@@ -19,9 +21,6 @@ public class EmployeeService {
 
 	@Autowired
 	private EmployeeRepository repository;
-	
-	@Autowired
-	private EmployerService service;
 
 	public EmployeeService() {
 
@@ -60,11 +59,8 @@ public class EmployeeService {
 	}
 
 	@CacheEvict(value = "employees", allEntries = true)
-	public void addEmployee(Employee employee, String employerName) {
+	public void saveEmployee(Employee employee) {
 
-		if (employee.getEmployer() == null)
-			employee.setEmployer(service.getEmployer(employerName));
-		
 		repository.save(employee);
 	}
 
@@ -75,11 +71,32 @@ public class EmployeeService {
 		if (repository.findById(employeeId).get() != null)
 			repository.save(employee);
 	}
-	
+
+	public void saveEmployee(EmployeeDto employeeDto, Employer employer) {
+
+		Employee employee = convertToEntity(employeeDto);
+
+		employee.setEmployer(employer);
+		
+		if (employee.getId() == null) {
+			
+			saveEmployee(employee);
+		} else {
+
+			updateEmployee(employee.getId(), employee);
+		}
+	}
+
 	@Caching(evict = { @CacheEvict(value = "employee", allEntries = true),
 			@CacheEvict(value = "employees", allEntries = true) })
 	public void deleteAllEmployees() {
-		
+
 		repository.deleteAll();
+	}
+
+	private Employee convertToEntity(EmployeeDto employeeDto) {
+
+		return new Employee(employeeDto.getId(), employeeDto.getName(), employeeDto.getLastname(), employeeDto.getAge(),
+				employeeDto.getGender(), null, employeeDto.getSalary(), employeeDto.isActive());
 	}
 }

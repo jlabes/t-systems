@@ -1,2 +1,1 @@
-dadfasdfasdfteste na master
-another line added
+rebase executed

@@ -31,14 +31,16 @@
 						th:text="#{employees}"></span> <span class="caret"></span>
 				</a>
 					<ul class="dropdown-menu" aria-labelledby="dropdownEmployees">
-						<li><a th:href="@{/employees}"><span
-								th:text="#{list}"></span></a></li>
+						<li><a th:href="@{/employees}"><span th:text="#{list}"></span></a></li>
 						<li><a th:href="@{/employees/salary}"><span
 								th:text="#{salary}"></span></a></li>
 					</ul></li>
 				<li><a th:href="@{/employee/register}"><span
 						th:text="#{register}"></span></a></li>
-				<li><a th:href="@{/logout}"><span th:text="#{logout}"></span></a>
+				<li>
+					<form th:action="@{/logout}" method="POST">
+						<input type="submit" th:value="#{logout}">
+					</form>
 				</li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">

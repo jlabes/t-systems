@@ -9,22 +9,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class DataSourceConfig {
 
-	private final String DRIVER = "org.h2.Driver";
-	private final String URL_PROD = "jdbc:h2:tcp://localhost:9092/~/tsystems";
-	private final String URL_DEV = "jdbc:h2:mem:dbtsystem";
-	private final String USER = "johnny";
-	private final String PASSWORD = "";
+	private final String DRIVER_H2 = "org.h2.Driver";
+	private final String DRIVER_MYSQL = "com.mysql.cj.jdbc.Driver";
+	private final String URL_PROD = "jdbc:h2:tcp://localhost:9092/~/Tsystems";
+	private final String URL_DEV = "jdbc:mysql://localhost:3306/Tsystems";
+	private final String USER = "root";
+	private final String PASSWORD = "tsystems123";
 	
-	/**
-	 * java -cp h2-1.4.199.jar org.h2.tools.Server
-	 * @return DataSource
-	 */
 	@Bean
 	@Profile("production")
 	public DataSource dataSourceProduction() {
 		
 		DataSource ds = new DataSource();
-		ds.setDriverClassName(DRIVER);
+		ds.setDriverClassName(DRIVER_H2);
 		ds.setUrl(URL_PROD);
 		ds.setUsername(USER);
 		ds.setPassword(PASSWORD);
@@ -36,7 +33,7 @@ public class DataSourceConfig {
 	public DataSource dataSourceDevelopment() {
 		
 		DataSource ds = new DataSource();
-		ds.setDriverClassName(DRIVER);
+		ds.setDriverClassName(DRIVER_MYSQL);
 		ds.setUrl(URL_DEV);
 		ds.setUsername(USER);
 		ds.setPassword(PASSWORD);

@@ -1,8 +1,9 @@
-package com.tsystems.model;
+package com.tsystems.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -11,24 +12,43 @@ import javax.persistence.ManyToOne;
 public class Employee {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
+	@Column(name = "id")
 	private Long id;
 
+	@Column(name = "name", nullable = false)
 	private String name;
 
+	@Column(name = "lastname", nullable = false)
 	private String lastname;
 
+	@Column(name = "age", nullable = false)
 	private int age;
 
+	@Column(name = "gender", nullable = false)
 	private char gender;
 
-	@ManyToOne
-	@JoinColumn(name = "employer_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "employer_id", nullable = false)
 	private Employer employer;
 	
+	@Column(name = "salary", nullable = false)
 	private double salary;
 	
+	@Column(name = "active", nullable = false)
 	private boolean active;
+	
+	public Employee(Long id, String name, String lastname, int age, char gender, Employer employer, double salary,
+			boolean active) {
+		this.id = id;
+		this.name = name;
+		this.lastname = lastname;
+		this.age = age;
+		this.gender = gender;
+		this.employer = employer;
+		this.salary = salary;
+		this.active = active;
+	}
 
 	public Long getId() {
 		return id;
